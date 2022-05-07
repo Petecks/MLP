@@ -1,2 +1,3 @@
 # MLP
- Multilayer Perceptron
+ Multilayer Perceptron for master degree subject.
+ 
