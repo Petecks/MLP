@@ -5,7 +5,7 @@ import activation_functions
 
 class MLP:
 
-    def __init__(self, x, y, activation_function, hidden_r=1, hidden_c=1, eta=0.2):
+    def __init__(self, x, y, activation_function, hidden_r=2, hidden_c=2, eta=0.2):
 
         self.x = x
         self.Y = y
@@ -15,15 +15,14 @@ class MLP:
 
     def perceptron_node(self, x, wij):
         u = 0
-        for i in range(x.shape[0]):
-            for j in range(x.shape[1]):
-                u += x[i, j] * wij
+        for i in range(np.size(x)):
+                u += np.sum(x*wij)
         return self.activation_function(u)
 
     def perceptron_colum(self, x, wj):
-        u = np.zeros(wj.shape[0])
-        for i in range(wj.shape[0]):
-            u[i] = self.perceptron_node(x[:,1], wj[i, 0])
+        u = np.zeros(np.size(wj))
+        for i in range(np.size(wj)):
+            u[i] = self.perceptron_node(x, wj[i])
         return u
 
     def hidden_layer(self):
@@ -36,6 +35,6 @@ class MLP:
             u[:,i+1] = self.perceptron_colum(u[:i], self.w[:,i+1])
         # result layer
         y = np.zeros(self.Y.shape[1])
-        y = self.perceptron_colum(u[:-1], np.ones(1,self.Y.shape[1]))
+        y = self.perceptron_colum(u[:-1], np.ones(np.size(self.Y)))
         return activation_functions.rectifier_linear_derivative(y)
 

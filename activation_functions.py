@@ -10,4 +10,4 @@ def rectifier_linear(x):
      return x if x > 0 else 0
 
 def rectifier_linear_derivative(x):
-     return 1 if x > 0 else 0
+     return x > 0
