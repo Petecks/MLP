@@ -19,9 +19,11 @@ response = titanicData[['Survived']].to_numpy()
 # CREATING AN INSTANCE OF MLP
 xis = np.array([[1, 2],
                 [3, 4]])
-hidden = np.ones((2,1))
-percep = MLP.MLP(xis[1:], hidden, act.sigmoid)
-percep.hidden_layer()
+firsthidden = np.array([[0.1, 0.1],[0.1, 0.1]],dtype=object)
+secondhidden = np.array([[0.1, 0.1],[0.1, 0.1],[0.1, 0.1]],dtype=object)
+hidden = np.array( [firsthidden, secondhidden, 0], dtype=object)
+percep = MLP.MLP(xis, [[0, 1],[0, 1]], act.sigmoid, 0.2, 2, 3)
+# percep.perceptron_colum(xis[1:],hidden[0])
 # print(f"valor da func é {percep.perceptron_node(xis, 0.1) }")
 
 # print(features)
