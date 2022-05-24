@@ -55,7 +55,7 @@ class MLP:
     def softmax(self,y):
         return np.exp(y)/np.sum(np.exp(y))
 
-    def test_model_epoch(self,n):
+    def test_model_epoch(self,n,flag=0):
         y = np.zeros(self.number_of_layers,dtype=object)
         v = np.zeros(self.number_of_layers,dtype=object)
         # first hidden layer result
@@ -68,14 +68,19 @@ class MLP:
         self.y = y
         # y = self.perceptron_colum(u[-1],self.w[-1])
         # probability vector output
+        if flag == 1:
+            return self.softmax(y[-1])
         return y[-1]
+
         # add in other option
-        # return self.softmax(y)
+
+
+
 
     def training_mode(self):
         for i in range(self.n_max):
             for j in range(self.x.shape[0]):
-                output = self.test_model_epoch(j)
+                output = self.test_model_epoch(j,0)
                 self.back_propagation(output)
 
 
