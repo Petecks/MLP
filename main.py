@@ -23,11 +23,11 @@ parameters = numData.to_numpy()
 # percep.test_model_epoch()
 # percep.training_mode()
 # d = np.reshape(parameters[:,0].transpose() ,(10,-1))
-percep2 = MLP.MLP(parameters[:,1:],parameters[:,0], act.sigmoid, 0.1, 200, 10, 10, 10)
+percep2 = MLP.MLP(parameters[:,1:],parameters[:,0], act.sigmoid, 2, 50, 10 ,10, 10)
 percep2.training_mode()
 
 # print(percep.test_model_epoch())
-print(percep2.test_model_epoch(1,1))
+print(percep2.test_model_epoch(9,1))
 
 
 # for name in dir():
