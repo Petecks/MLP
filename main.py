@@ -3,12 +3,12 @@ import numpy as np
 import pandas as pd
 import activation_functions as act
 import MLP
-
+import random
 # DATA PRE PROCESSING
 
 numData = pd.read_csv("Data/data.csv", header=None)
 parameters = numData.to_numpy()
-
+# random.shuffle(parameters)
 # percep = MLP.MLP(features, response, act.sigmoid)
 # CREATING AN INSTANCE OF MLP
 # xis = np.array([[1, 2],
@@ -23,11 +23,12 @@ parameters = numData.to_numpy()
 # percep.test_model_epoch()
 # percep.training_mode()
 # d = np.reshape(parameters[:,0].transpose() ,(10,-1))
-percep2 = MLP.MLP(parameters[:,1:],parameters[:,0], act.sigmoid, 2, 50, 10 ,10, 10)
+percep2 = MLP.MLP(parameters[:,1:],parameters[:,0], act.sigmoid, 0.5, 500 , 10, 9, 10)
 percep2.training_mode()
 
 # print(percep.test_model_epoch())
-print(percep2.test_model_epoch(9,1))
+for i in range(10):
+    print(percep2.test_model_epoch(i,1))
 
 
 # for name in dir():

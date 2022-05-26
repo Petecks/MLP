@@ -51,11 +51,11 @@ class MLP:
 
     # each colum layer of layers
     def perceptron_colum(self, x, wj):
-        u = np.zeros(wj.shape[0])
+        y = np.zeros(wj.shape[0])
         v = np.zeros(wj.shape[0])
-        for i in range(np.size(u)):
-            u[i],v[i] = self.perceptron_node(x, wj[i])
-        return u,v
+        for i in range(np.size(v)):
+            y[i],v[i] = self.perceptron_node(x, wj[i])
+        return y,v
 
     # softmax probability implementation
     def softmax(self,y):
@@ -72,46 +72,35 @@ class MLP:
         # result layer
         self.v = v
         self.y = y
-        # y = self.perceptron_colum(u[-1],self.w[-1])
         # probability vector output
         if flag == 1:
             return self.softmax(y[-1])
         return y[-1]
 
-        # add in other option
-
-
-
-
     def training_mode(self):
         for i in range(self.n_max):
             for j in range(self.x.shape[0]):
-                output = self.test_model_epoch(j,0)
-                self.back_propagation(j,output)
-
-
-
-    # error = (output - expected) * transfer_derivative(output)
-    # error = (weight_k * error_j) * transfer_derivative(output)
-    # weight = weight - learning_rate * error * input
+                self.test_model_epoch(j,0)
+                self.back_propagation(j)
 
     # Back propagation of error to calculate the new weights
-    def back_propagation(self,j,output):
+    def back_propagation(self,j):
         # output error calculation
-        shaped_d = np.zeros(np.shape(output))
+        shaped_d = np.zeros(np.shape(self.y[-1]))
         shaped_d[self.d[j]] = 1
 
         self.error[-1] = ( shaped_d - self.y[-1]) * act.derivative_sigmoid(self.v[-1])
         self.error[-1] = np.ones((len(self.error[-1]),len(self.y[-2]))) * self.error[-1].reshape((len(self.error[-1]), 1))
-        delta_w = self.eta * self.error[-1] *  np.ones((len(self.error[-1]), len(self.y[-2])))*self.y[-2]
+        delta_w = self.eta * self.error[-1] * np.ones((len(self.error[-1]), len(self.y[-2]))) * self.y[-2]
 
         self.w[-1] = self.w[-1] + delta_w
 
         for i in reversed(range(np.size(self.error)-1)):
-            self.error[i] = np.sum(self.w[i + 1] * self.error[i + 1]) * act.derivative_sigmoid(self.v[i])
+            self.error[i] = [sum(x) for x in zip(*(self.w[i + 1] * self.error[i + 1]))] * act.derivative_sigmoid(self.v[i])
+            # self.error[i] = np.sum(self.w[i + 1] * self.error[i + 1]) * act.derivative_sigmoid(self.v[i])
             if i==0:
-                self.error[i] = np.ones((len(self.error[i]), len(self.x[0]))) * self.error[i].reshape((len(self.error[i]), 1))
-                delta_w = self.eta * self.error[i] * np.ones((len(self.error[i]), len(self.x[0]))) * self.x[0]
+                self.error[i] = np.ones((len(self.error[i]), len(self.x[j]))) * self.error[i].reshape((len(self.error[i]), 1))
+                delta_w = self.eta * self.error[i] * np.ones((len(self.error[i]), len(self.x[j]))) * self.x[j]
                 self.w[i] = self.w[i] + delta_w
                 return
             self.error[i] = np.ones((len(self.error[i]), len(self.y[i-1]))) *self.error[i].reshape((len(self.error[i]), 1))
