@@ -23,7 +23,6 @@ class MLP:
         self.w = np.ones(self.number_of_layers, dtype=object)
         # add first matrix of neurons into layer
         self.w[0] = -.5 + np.random.rand(hiddenlayer1, self.x.shape[1])
-        # self.w[0] = np.ones([hiddenlayer1, self.x.shape[1]], dtype=float)
         # assumption of reference, for create the next layer
         old = self.w[0]
         i=0
@@ -31,19 +30,14 @@ class MLP:
             i += 1
             #  instance of next hidden layer
             old = -.5 + np.random.rand(layer, old.shape[0])
-            # old = np.ones([layer, old.shape[0]], dtype=float)
-            # add in a layers array of matrices
             self.w[i] = old
         # add output layer to weight matrix
-        # self.w[-1] = np.ones([ np.size(self.d[0]), old.shape[0]], dtype=float)
-        # self.error = self.w.copy()*0
-        # self.v = self.w.copy()*0
-        # self.y = self.w.copy()*0
+
         self.error = np.zeros(self.number_of_layers, dtype=object)
         self.v = np.zeros(self.number_of_layers, dtype=object)
         self.y = np.zeros(self.number_of_layers, dtype=object)
         self.activation_function = activation_function
-
+        self.error_count = np.zeros(n_max)
     # each node sum and activation function
     def perceptron_node(self, x, wij):
         v = np.sum(x*wij)
@@ -79,25 +73,32 @@ class MLP:
 
     def training_mode(self):
         for i in range(self.n_max):
-            for j in range(self.x.shape[0]):
+            for j in range(self.x.shape[0]): #sem holdout
+            # for j in range(105): # holdout model
                 self.test_model_epoch(j,0)
-                self.back_propagation(j)
+                self.back_propagation(j,i)
 
     # Back propagation of error to calculate the new weights
-    def back_propagation(self,j):
+    def back_propagation(self,j,epoch):
         # output error calculation
         shaped_d = np.zeros(np.shape(self.y[-1]))
         shaped_d[self.d[j]] = 1
+        max_index_d = np.argmax(shaped_d)
+        max_index_y = np.argmax(self.y[-1])
+        # Compare errors to sum
+        if max_index_d != max_index_y:
+            self.error_count[epoch] += 1
 
+        #outlayer calculation weights
         self.error[-1] = ( shaped_d - self.y[-1]) * act.derivative_sigmoid(self.v[-1])
         self.error[-1] = np.ones((len(self.error[-1]),len(self.y[-2]))) * self.error[-1].reshape((len(self.error[-1]), 1))
         delta_w = self.eta * self.error[-1] * np.ones((len(self.error[-1]), len(self.y[-2]))) * self.y[-2]
 
         self.w[-1] = self.w[-1] + delta_w
-
+        # hidden layers calculation weights
         for i in reversed(range(np.size(self.error)-1)):
             self.error[i] = [sum(x) for x in zip(*(self.w[i + 1] * self.error[i + 1]))] * act.derivative_sigmoid(self.v[i])
-            # self.error[i] = np.sum(self.w[i + 1] * self.error[i + 1]) * act.derivative_sigmoid(self.v[i])
+            # if layer is the input layer
             if i==0:
                 self.error[i] = np.ones((len(self.error[i]), len(self.x[j]))) * self.error[i].reshape((len(self.error[i]), 1))
                 delta_w = self.eta * self.error[i] * np.ones((len(self.error[i]), len(self.x[j]))) * self.x[j]
@@ -106,10 +107,3 @@ class MLP:
             self.error[i] = np.ones((len(self.error[i]), len(self.y[i-1]))) *self.error[i].reshape((len(self.error[i]), 1))
             delta_w = self.eta * self.error[i] * np.ones((len(self.error[i]), len(self.y[i-1]))) * self.y[i-1]
             self.w[i] = self.w[i] + delta_w
-
-        # print(self.w[-1])
-        # self.w[-1] = self.w[-1] - (self.eta * output_error * self.x[0])
-        # print(self.w[-1])
-        # hidden layers error calculation
-        # hidden_error = (weight_k * error_j) * act.derivative_sigmoid(output)
-
