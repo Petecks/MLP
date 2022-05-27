@@ -71,9 +71,13 @@ class MLP:
             return self.softmax(y[-1])
         return y[-1]
 
-    def training_mode(self):
+    def training_mode(self,holdout=0):
+        if holdout==0:
+            holdout = int(self.x.shape[0])
+        else:
+            holdout = int(self.x.shape[0]/2)
         for i in range(self.n_max):
-            for j in range(self.x.shape[0]): #sem holdout
+            for j in range(holdout): # holdout
             # for j in range(105): # holdout model
                 self.test_model_epoch(j,0)
                 self.back_propagation(j,i)
